@@ -20,13 +20,13 @@ function calculateTotalMortgage(percent, contribution, amount, date) {
   let totalAmount;
 
   if(typeof(percent) != 'number'){
-    return `Параметр "Процентная ставка" содержит неправильное значение ${percent}`;
+    return `Параметр "Процентная ставка" содержит неправильное значение "${percent}"`;
   }
   if(typeof(contribution)!= 'number'){
-    return `Параметр "Начальный взнос" содержит неправильное значение ${contribution}`;
+    return `Параметр "Начальный взнос" содержит неправильное значение "${contribution}"`;
   } 
   if(typeof(amount)!= 'number'){
-    return `Параметр "Общая стоимость" содержит неправильное значение ${amount}`
+    return `Параметр "Общая стоимость" содержит неправильное значение "${amount}"`
   }
   const floatPersent = percent /100;
   const creditBody = amount - contribution;
@@ -34,6 +34,6 @@ function calculateTotalMortgage(percent, contribution, amount, date) {
   const dateTo = new Date(date);
   const creditLenght = dateTo.getMonth() - dateFrom.getMonth() + (12 * (dateTo.getFullYear() - dateFrom.getFullYear()));
   const monthlyPayment = creditBody * ((floatPersent/12) + (floatPersent/12) / (((1 + (floatPersent/12))**creditLenght) - 1));
-  totalAmount = (monthlyPayment * creditLenght).toFixed(2);
+  totalAmount = +((monthlyPayment * creditLenght).toFixed(2));
   return totalAmount;
 }
