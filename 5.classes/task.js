@@ -29,40 +29,35 @@ class PrintEditionItem {
 class Magazine extends PrintEditionItem {
     constructor (name, releaseDate, pagesCount){
         super(name, releaseDate, pagesCount);
-        this.state = 100;
         this.type = 'magazine';
     }
 }
 
 class Book extends PrintEditionItem {
-    constructor (author,name, releaseDate, pagesCount){
+    constructor (author, name, releaseDate, pagesCount){
         super(name, releaseDate, pagesCount);
-        this.state = 100;
         this.type = 'book';
         this.author = author;
     }
 }
 
 class NovelBook extends Book {
-    constructor (author,name, releaseDate, pagesCount){
+    constructor (author, name, releaseDate, pagesCount){
         super(author, name, releaseDate, pagesCount);
-        this.state = 100;
         this.type = 'novel';
     }
 }
 
 class FantasticBook extends Book {
-    constructor (author,name, releaseDate, pagesCount){
+    constructor (author, name, releaseDate, pagesCount){
         super(author, name, releaseDate, pagesCount);
-        this.state = 100;
         this.type = 'fantastic';
     }
 }
 
 class DetectiveBook extends Book {
-    constructor (author,name, releaseDate, pagesCount){
+    constructor (author, name, releaseDate, pagesCount){
         super(author, name, releaseDate, pagesCount);
-        this.state = 100;
         this.type = 'detective';
     }
 }
@@ -83,20 +78,18 @@ class Library {
         for (let book of this.books) {
             if(type in book && book[type] === value) {
                 return book;
-            } else {
-                return null;
+            } 
             }
-        }
+        return null;
     }
 
     giveBookByName(bookName) {
-        for(let book of this.books) {
-            if(book.name === bookName) {
-                this.books.splice(this.books.indexOf(book), 1);
-                return book;
-            }
+        let book = this.findBookBy("name", bookName);
+        let bookIndex = this.books.indexOf(book);
+        if (bookIndex > -1) {
+            this.books.splice(bookIndex, 1)
         }
-        return null;
+        return book;
     }
 }
 
@@ -105,42 +98,45 @@ class Student {
         this.name = name;
         this.gender = gender;
         this.addBook = age;
-        this.subjects = [];
+        this.subjects = {};
     }
 
-    addSubject(subjectName) {
-        if(this.subjects.some(subject => subjectName in subject)) {
-            console.log('Такой предмет уже есть');
-        } else {
-            this.subjects.push({subjectName: []});
-        }
-    }
-
-    addMark(mark, subject) {
+    addMark(mark, subjectName) {
         if (mark < 1 || mark > 5) {
-            return ('Ошибка, оценка должна быть числом от 1 до 5');
+            console.error('Ошибка, оценка должна быть числом от 1 до 5');
         } else  {
-            for (subj of this.subjects){
-                if(subj.subjectName === subject){
-                    subj.push(mark);
-                } else {
-                    this.addSubject(subject);
-                    subj.push(mark);   
-                }
+            if (!(subjectName in this.subjects)) {
+                this.subjects[subjectName] = [mark];
+            } else {
+                this.subjects[subjectName].push(mark);
             }
         }    
     }
 
-    getAverageBySubject(subject) {
-        for(subj of this.subjects){
-            if (subj.subjectName === subject){
-                let marksSum = 0;
-                for(mark of subj.subjectname){
-                    marksSum += mark;
-                }
-                return (`Средний балл по предмету ${subject} ${(marksSum / subj[subjectName].length).toFixed(2)}`);
+    getAverageBySubject(subjectName) {
+        if (!(subjectName in this.subjects)) {
+            console.error('Несуществующий предмет');
+        } else {
+            let marksSum = 0;
+            for (let mark of this.subjects[subjectName]) {
+                marksSum += mark;
             }
+            return (+(marksSum / this.subjects[subjectName].length).toFixed(2));
         }
-        // return ('Несуществующий предмет');
+    }
+
+    getAverage() {
+        let subjCount = 0;
+        let marksCount = 0;
+        for (let subject in this.subjects) {
+            marksCount += this.getAverageBySubject(subject);
+            subjCount += 1;
+        }
+        return marksCount / subjCount;
+    }
+
+    exclude(reason) {
+        this.excluded = reason;
+        delete this.subjects;
     }
 }
