@@ -3,7 +3,7 @@ function cachingDecoratorNew(func) {
   function wrapper(...args) {
     const idx = cash.findIndex((item) => item.hash === args.join(","));
     if (idx === -1) {
-      let result = func(...args);
+      let result = func.call(this, ...args);
       cash.push({ hash: args.join(","), value: result });
       if (cash.length > 5) {
         cash.shift();
@@ -19,43 +19,34 @@ function cachingDecoratorNew(func) {
 }
 
 function debounceDecoratorNew(func, ms) {
-  let timeout;
-  func();
   let flag = true;
   function wrapper(...args) {
     if (flag === false) {
-      timeout = setTimeout(() => {
-        func(...args), (flag = false);
-      }, ms);
-      flag = true;
-    } else {
-      clearTimeout(timeout);
-      timeout = setTimeout(() => {
-        func(...args), (flag = true);
-      }, ms);
+      return;
     }
+    flag = false;
+    func.call(this, ...args);
+    setTimeout(() => {
+      (flag = true), ms;
+    });
   }
   return wrapper;
 }
 
 function debounceDecorator2(func, ms) {
-  let timeout;
-  func();
   let flag = true;
-  wrapper.count = 1;
   function wrapper(...args) {
     if (flag === false) {
-      timeout = setTimeout(() => {
-        func(...args), (flag = false);
-      }, ms);
-      flag = true;
+      return;
     } else {
-      clearTimeout(timeout);
-      timeout = setTimeout(() => {
-        func(...args), (flag = true);
-      }, ms);
+      flag = false;
+      func.call(this, ...args);
+      setTimeout(() => {
+        (flag = true), ms;
+      });
     }
     wrapper.count++;
   }
+  wrapper.count = 0;
   return wrapper;
 }
